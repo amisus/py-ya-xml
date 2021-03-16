@@ -3,6 +3,7 @@
 from six.moves import urllib
 from xml.dom import minidom
 from six import PY2
+import ssl
 
 class SearchResultItem:
     def __init__(self, url, title, snippet):
@@ -115,7 +116,14 @@ class YaSearch:
             post_data = (self.REQUEST_TEMPLATE % (query, str(page), order, sort_by)).encode('utf-8')
 
         req = urllib.request.Request(search_url, post_data)
+        #config proxy
+        proxy_support = urllib.request.ProxyHandler({'http': 'http://socratesproxyco.amisustest.co.uk:3128',
+                                                     'https': 'http://socratesproxyco.amisustest.co.uk:3128'})
+        opener = urllib.request.build_opener(proxy_support)
+        urllib.request.install_opener(opener)
+        #get url
         response = urllib.request.urlopen(req)
+
         xml = response.read()
         dom = minidom.parseString(xml)
         items = []
